@@ -28,15 +28,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(cors -> cors.disable()) //omogućuje drugim web-stranicama sa drugih domena pristup serveru
-                .csrf(csrf -> csrf.disable()) //kod REST API koji ne koriste sesije i kolačiće za autorizaciju
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //upravljanje sesijama, sesije se neće koristiti STATELESS
+                .cors(cors -> cors.disable())
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //dopustamo svima, hendlanje errora
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken").permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider()) //pomoću njega autentificiramo korisnika
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         ;
         return httpSecurity.build();
@@ -44,22 +44,22 @@ public class SecurityConfig {
     }
     @Bean
     public UserDetailsService userDetailsService(){
-        return new UserDetailsServiceImpl(); //Override zadani/defaultni userDetailsService sa nasim custom made userDetailsServiceImpl
+        return new UserDetailsServiceImpl();
     }
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder()); //postavlja kodiranje lozinke za zadani password encoder kojeg smo konfigurirali u nastavku koda
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
-        return configuration.getAuthenticationManager(); //upravlja autentifikacijama
+        return configuration.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(); //lozinke se kodiraju pomocu BCrypt algoritma
+        return new BCryptPasswordEncoder();
     }
 }

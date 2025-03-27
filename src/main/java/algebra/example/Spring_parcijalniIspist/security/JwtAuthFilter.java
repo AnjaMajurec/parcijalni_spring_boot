@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter { //alt+insert-override-do filterInternal(request,response..)
-    //prije nego request uđe u našu app, prvo ide u filter
+public class JwtAuthFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -30,7 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter { //alt+insert-override-
             filterChain.doFilter(request,response);
             return;
         }
-        String authHeader=request.getHeader("Authorization"); //naziv bilo koji, no mora biti syncan s nazivom headera u postmanu
+        String authHeader=request.getHeader("Authorization");
         String token=null;
         String username=null;
 
@@ -38,21 +38,21 @@ public class JwtAuthFilter extends OncePerRequestFilter { //alt+insert-override-
         if(authHeader==null){
             throw new ServletException();
         }
-        if(!authHeader.startsWith("Bearer ")){ //bearer-ime tokena
+        if(!authHeader.startsWith("Bearer ")){
             throw new ServletException();
         }
-        token=authHeader.substring(7); //metoda za obrisat prvih 7 znakova
+        token=authHeader.substring(7);
         username= jwtService.extractUsername(token);
 
         UserDetails userDetails= userDetailsService.loadUserByUsername(username);
         boolean isTokenValid= jwtService.validateToken(token,userDetails);
         if(isTokenValid){
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,new ArrayList<>()); //defaultna provjera
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); //WebAuthenticationDetailsSource za rad sa spring boot-om
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken); // u context stavimo kreirani autentificirani token, odnosno imamo token unutar requesta
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,new ArrayList<>());
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         }
-        filterChain.doFilter(request,response); //idi mi na iduci filter i proslijedi trenutni request i response
+        filterChain.doFilter(request,response);
     }
 }
 

@@ -11,9 +11,9 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
-    private final String SECRET_KEY="YR6NKUdqjvelpRGGQs91jFBEPnhCVo0Irsx1uHCn4eNYbaMPpuMEs4M832bYVKc7"; //64 charactera mora biti key //rad sa JWT tokenom, moramo imat secret da ga možemo dekodirat
+    private final String SECRET_KEY="YR6NKUdqjvelpRGGQs91jFBEPnhCVo0Irsx1uHCn4eNYbaMPpuMEs4M832bYVKc7";
 
-    public boolean validateToken(String token, UserDetails userDetails){//userDetails spremi se tijekom log-in-a //provjera da je token ispravan ili da li je istekao
+    public boolean validateToken(String token, UserDetails userDetails){
         String username = extractUsername(token);
         boolean isUsernameValid = username.equals(userDetails.getUsername());
 
@@ -36,21 +36,20 @@ public class JwtService {
     }
 
     public String extractUsername(String token){
-        return extractClaim(token, Claims::getSubject); //prvi ulazni, drugi izlazni
+        return extractClaim(token, Claims::getSubject);
     }
     public Date extractExpirationDate(String token){
         Claims allClaims=extractAllClaims(token);
         return allClaims.getExpiration();
     }
-    //više povratnih tipova T
-    public <T> T extractClaim(String token, Function<Claims,T> claimsResolver){ //generični tipovi return
-        Claims claims=extractAllClaims(token); //moze return string, date... resolver-koji dio koda zelimo nadodati na njega
-        return claimsResolver.apply(claims); //pretvorimo json body, stavimo resolver, preko getSubjecta dohvati username
+    public <T> T extractClaim(String token, Function<Claims,T> claimsResolver){
+        Claims claims=extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token){ //dohvatili sve iz jwt tokena
-        return Jwts.parser() //parsira nekakav token
-                .setSigningKey(SECRET_KEY) //definirali gore
+    private Claims extractAllClaims(String token){
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws((token))
                 .getBody();
@@ -58,8 +57,8 @@ public class JwtService {
     public String generateAccessToken(String username){
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date()) //trenutno vrijeme
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60)) //traje 1 sat
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
@@ -67,8 +66,8 @@ public class JwtService {
     public String generateRefreshToken(String userId){
         return Jwts.builder()
                 .setSubject(userId)
-                .setIssuedAt(new Date()) //trenutno vrijeme
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*100)) //traje 100h
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*100))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
