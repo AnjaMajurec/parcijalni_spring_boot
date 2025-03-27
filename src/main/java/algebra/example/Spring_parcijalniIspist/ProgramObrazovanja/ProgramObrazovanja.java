@@ -1,4 +1,4 @@
-package algebra.example.Spring_parcijalniIspist.Polaznik;
+package algebra.example.Spring_parcijalniIspist.ProgramObrazovanja;
 
 import algebra.example.Spring_parcijalniIspist.Upisi.Upis;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -13,19 +13,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Polaznik {
+public class ProgramObrazovanja {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String ime;
-    private String prezime;
 
+    private String naziv;
+    private Integer csvet;
+
+    @OneToMany(mappedBy = "programObrazovanja")
     @JsonBackReference
-    @OneToMany(mappedBy = "polaznik")
     private List<Upis> upisi;
-
-    public Polaznik(String ime, String prezime){
-        this.ime=ime;
-        this.prezime=prezime;
-    }
 }

@@ -30,7 +30,7 @@ public class PolaznikController {
         return ResponseEntity.status(200).body(polaznik.get());
     }
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<Polaznik> create(@Valid @RequestBody CreatePolaznikDto dto){
         Polaznik polaznik=polaznikService.create(dto);
         return ResponseEntity.status(201).body(polaznik);

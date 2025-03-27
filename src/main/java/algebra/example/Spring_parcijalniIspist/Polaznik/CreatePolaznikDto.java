@@ -13,4 +13,5 @@ public class CreatePolaznikDto {
 
     @NotBlank
     private String prezime;
+
 }
